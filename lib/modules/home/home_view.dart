@@ -16,9 +16,25 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  final RxBool _isFocused = false.obs;
+
   @override
   void initState() {
     super.initState();
+    _searchFocusNode.addListener(() {
+      if (_searchFocusNode.hasFocus) {
+        _isFocused.value = true;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -32,70 +48,154 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: TextField(
-            onChanged: controller.search,
-            decoration: const InputDecoration(
-              hintText: '加特林烟花',
-              prefixIcon: Icon(Icons.search, color: Colors.grey),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: TapRegion(
+            groupId: "searchBar",
+            child: TextField(
+              controller: _searchController,
+              focusNode: _searchFocusNode,
+              textInputAction: TextInputAction.search,
+              onSubmitted: (value) {
+                controller.search(value);
+                _searchFocusNode.unfocus();
+                _isFocused.value = false;
+              },
+              decoration: InputDecoration(
+                hintText: '加特林烟花',
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {
+                    controller.search(_searchController.text);
+                    _searchFocusNode.unfocus();
+                    _isFocused.value = false;
+                  },
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+              ),
             ),
           ),
         ),
       ),
-      body: Obx(() {
-        if (controller.products.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return CustomScrollView(
-          slivers: [
-            // Hot Ranking Section
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '热门烟花',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+      body: Stack(
+        children: [
+          Obx(() {
+            if (controller.products.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return CustomScrollView(
+              slivers: [
+                // Hot Ranking Section
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '热门烟花',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          height: 140,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: controller.hotProducts.length,
+                            itemBuilder: (context, index) {
+                              final product = controller.hotProducts[index];
+                              return _buildHotItem(product, index);
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      height: 140,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: controller.hotProducts.length,
-                        itemBuilder: (context, index) {
-                          final product = controller.hotProducts[index];
-                          return _buildHotItem(product, index);
-                        },
+                  ),
+                ),
+                // Product Grid
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: SliverMasonryGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    childCount: controller.products.length,
+                    itemBuilder: (context, index) {
+                      return _buildProductCard(
+                        context,
+                        controller.products[index],
+                      );
+                    },
+                  ),
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 20)),
+              ],
+            );
+          }),
+          Obx(() {
+            if (!_isFocused.value) return const SizedBox.shrink();
+            return Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: TapRegion(
+                groupId: "searchBar",
+                onTapOutside: (_) {
+                  _searchFocusNode.unfocus();
+                  _isFocused.value = false;
+                },
+                child: Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Search Suggestions',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: controller.searchSuggestions.map((
+                          suggestion,
+                        ) {
+                          return ActionChip(
+                            label: Text(suggestion),
+                            onPressed: () {
+                              _searchController.text = suggestion;
+                              _searchController.selection =
+                                  TextSelection.fromPosition(
+                                    TextPosition(offset: suggestion.length),
+                                  );
+                              controller.search(suggestion);
+                              _searchFocusNode.unfocus();
+                              _isFocused.value = false;
+                            },
+                            backgroundColor: Colors.grey[100],
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            // Product Grid
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverMasonryGrid.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                childCount: controller.products.length,
-                itemBuilder: (context, index) {
-                  return _buildProductCard(context, controller.products[index]);
-                },
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 20)),
-          ],
-        );
-      }),
+            );
+          }),
+        ],
+      ),
     );
   }
 

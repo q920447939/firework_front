@@ -7,6 +7,8 @@ class HomeController extends GetxController {
   final RxList<Product> hotProducts = <Product>[].obs;
   final RxString searchQuery = ''.obs;
 
+  final List<String> searchSuggestions = ['加特林', '仙女棒', '水母烟花', '孔雀开屏', '满天星'];
+
   @override
   void onInit() {
     super.onInit();
@@ -26,9 +28,9 @@ class HomeController extends GetxController {
     if (query.isEmpty) {
       products.value = MockData.products;
     } else {
-      products.value = MockData.products.where((p) => 
-        p.name.toLowerCase().contains(query.toLowerCase())
-      ).toList();
+      products.value = MockData.products
+          .where((p) => p.name.toLowerCase().contains(query.toLowerCase()))
+          .toList();
     }
   }
 }
