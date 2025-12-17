@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:get/get.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tdesign_flutter/tdesign_flutter.dart';
+
 import '../../core/theme/app_theme.dart';
 import '../../core/models/product_model.dart';
 import 'home_controller.dart';
@@ -16,6 +16,11 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(HomeController());
@@ -30,25 +35,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           child: TextField(
             onChanged: controller.search,
             decoration: const InputDecoration(
-              hintText: '加特林',
+              hintText: '加特林烟花',
               prefixIcon: Icon(Icons.search, color: Colors.grey),
               border: InputBorder.none,
               contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             ),
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            onPressed: () => context.push('/cart'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () => context.push('/user'),
-          ),
-        ],
       ),
-      bottomNavigationBar: _buildBottomNavigator(context),
       body: Obx(() {
         if (controller.products.isEmpty) {
           return const Center(child: CircularProgressIndicator());
@@ -63,7 +57,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'HOT RANKING',
+                      '热门烟花',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -102,38 +96,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           ],
         );
       }),
-    );
-  }
-
-  Widget _buildBottomNavigator(BuildContext context) {
-    var tabs = [
-      TDTab(
-        child: Container(
-          width: 60.w,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10.r)),
-            color: Colors.red,
-          ),
-          child: TDText('首页', style: TextStyle(color: Colors.white)),
-        ),
-        contentHeight: 48,
-        textMargin: EdgeInsets.only(right: 8),
-        badge: TDBadge(TDBadgeType.redPoint),
-      ),
-      const TDTab(
-        child: TDText('购物车', style: TextStyle(color: Colors.white)),
-        contentHeight: 42,
-        textMargin: EdgeInsets.only(right: 16, top: 2, bottom: 2),
-        badge: TDBadge(TDBadgeType.message, message: '8'),
-      ),
-      const TDTab(text: '个人中心', height: 48, icon: Icon(TDIcons.app, size: 18)),
-    ];
-    return TDTabBar(
-      tabs: tabs,
-      controller: TabController(length: tabs.length, vsync: this),
-      showIndicator: true,
-      backgroundColor: Colors.transparent,
-      outlineType: .filled,
     );
   }
 
