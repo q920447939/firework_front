@@ -58,6 +58,10 @@ dependencies:
   flutter_dotenv: ^5.1.0
   tdesign_flutter: ^0.2.6
   cached_network_image: ^3.4.1
+  flutter_animate: ^4.4.0
+  flutter_svg: ^2.0.9
+  gap: ^3.0.1
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -88,6 +92,8 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
       - .env
+      - assets/svg/
+      - assets/base/svg/empty/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

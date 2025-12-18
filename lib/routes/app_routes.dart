@@ -1,10 +1,11 @@
+import 'package:firework_front/modules/cart/card_base_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../modules/main/main_wrapper.dart';
 import '../modules/home/home_view.dart';
 import '../modules/detail/detail_view.dart';
 
-import '../modules/cart/cart_view.dart';
+import '../modules/cart1/cart_view.dart';
 import '../modules/user/user_view.dart';
 
 class AppRoutes {
@@ -49,7 +50,8 @@ class AppRoutes {
             routes: [
               GoRoute(
                 path: '/cart',
-                builder: (context, state) => const CartView(),
+                //builder: (context, state) => const CartView(),
+                builder: (context, state) => const CardBasePage(),
               ),
             ],
           ),

@@ -1,8 +1,7 @@
 import 'package:get/get.dart';
 import '../../core/models/product_model.dart';
 import '../../data/mock_data.dart';
-import '../cart/cart_controller.dart';
-
+import '../cart1/cart_controller.dart';
 
 class DetailController extends GetxController {
   final Rx<Product?> product = Rx<Product?>(null);
@@ -28,15 +27,16 @@ class DetailController extends GetxController {
 
   Future<void> addToCart() async {
     if (product.value != null && selectedSpec.isNotEmpty) {
-      await cartController.addToCart(product.value!, selectedSpec.value, quantity.value);
+      await cartController.addToCart(
+        product.value!,
+        selectedSpec.value,
+        quantity.value,
+      );
     }
   }
-
 
   void buyNow() {
     // Get.snackbar('Contact Seller', 'Opening WhatsApp/Phone...');
     // In real app: launchUrl
   }
-
 }
-

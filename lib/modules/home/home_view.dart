@@ -62,7 +62,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               },
               decoration: InputDecoration(
                 hintText: '加特林烟花',
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                //prefixIcon: const Icon(Icons.search, color: Colors.grey),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.search),
                   onPressed: () {
