@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../core/models/product_model.dart';
+import '../../core/widget/custom_network_image.dart';
 import 'home_controller.dart';
 
 class HomeView extends StatefulWidget {
@@ -158,7 +159,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text(
-                        'Search Suggestions',
+                        '热门搜索',
                         style: TextStyle(
                           color: Colors.grey,
                           fontSize: 12,
@@ -209,8 +210,8 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  product.imageUrl,
+                child: CustomNetworkImage(
+                  imageUrl: product.imageUrl,
                   height: 80,
                   width: 100,
                   fit: BoxFit.cover,
@@ -284,7 +285,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(8),
               ),
-              child: Image.network(product.imageUrl, fit: BoxFit.cover),
+              child: CustomNetworkImage(
+                imageUrl: product.imageUrl,
+                fit: BoxFit.cover,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),

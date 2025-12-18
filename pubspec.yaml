@@ -57,6 +57,7 @@ dependencies:
   flutter_smart_dialog: ^4.9.8+9
   flutter_dotenv: ^5.1.0
   tdesign_flutter: ^0.2.6
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widget/custom_network_image.dart';
 import '../user/user_controller.dart';
 import 'cart_controller.dart';
 
@@ -80,18 +81,11 @@ class CartView extends StatelessWidget {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          item.imageUrl,
+                        child: CustomNetworkImage(
+                          imageUrl: item.imageUrl,
                           width: 80,
                           height: 80,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(
-                                width: 80,
-                                height: 80,
-                                color: Colors.grey[200],
-                                child: const Icon(Icons.error),
-                              ),
                         ),
                       ),
                     ),
