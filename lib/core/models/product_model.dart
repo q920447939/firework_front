@@ -24,18 +24,26 @@ class Product {
   });
 
   // Factory for simple mock data creation
-  factory Product.mock(String id, String name, double price) {
+  factory Product.mock(
+    String id,
+    String name,
+    double price,
+    List<String> specs,
+    String imageUrl,
+  ) {
     return Product(
       id: id,
       name: name,
       price: price,
       activityPrice: price * 0.8,
-      imageUrl: 'https://picsum.photos/seed/$id/400/400',
-      videoUrl: 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+      imageUrl: imageUrl,
+      videoUrl:
+          'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
       salesCount: 100 + int.parse(id) * 10,
       heat: 5,
-      specs: ['100 Shots', '200 Shots', '500 Shots'],
-      description: 'This is a spectacular firework named $name. It features vibrant colors and loud bangs. Perfect for celebrations!',
+      specs: specs,
+      description:
+          'This is a spectacular firework named $name. It features vibrant colors and loud bangs. Perfect for celebrations!',
     );
   }
 }
