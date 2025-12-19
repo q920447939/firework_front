@@ -49,7 +49,7 @@ class CartController extends GetxController {
         id: id,
         productId: product.id,
         name: product.name,
-        price: product.price,
+        price: product.activityPrice ?? product.price,
         imageUrl: product.imageUrl,
         spec: spec,
         quantity: quantity,
