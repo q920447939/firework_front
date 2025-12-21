@@ -1,10 +1,12 @@
 import 'package:get/get.dart';
 import '../../core/models/product_model.dart';
-import '../../data/mock_data.dart';
+import '../../core/network/public_product_api.dart';
 import '../cart1/cart_controller.dart';
 
 class DetailController extends GetxController {
   final Rx<Product?> product = Rx<Product?>(null);
+  final RxBool isLoading = false.obs;
+  final RxString errorMessage = ''.obs;
 
   final RxList<String> sizeOptions = <String>[].obs;
   final RxList<String> shotOptions = <String>[].obs;
@@ -16,6 +18,7 @@ class DetailController extends GetxController {
   final RxInt quantity = 1.obs;
 
   final CartController cartController = Get.put(CartController());
+  final PublicProductApi _api = PublicProductApi();
 
   String get selectedVariant {
     final parts = <String>[];
@@ -26,14 +29,20 @@ class DetailController extends GetxController {
     return parts.join(' / ');
   }
 
-  void loadProduct(String id) {
-    // Simulate API call
-    final foundProduct = MockData.products.firstWhere(
-      (p) => p.id == id,
-      orElse: () => MockData.products.first,
-    );
-    product.value = foundProduct;
-    _initOptions(foundProduct);
+  Future<void> loadProduct(String id) async {
+    isLoading.value = true;
+    errorMessage.value = '';
+    product.value = null;
+    try {
+      final foundProduct = await _api.fetchProductDetailAsAppProduct(id);
+      product.value = foundProduct;
+      _initOptions(foundProduct);
+    } catch (e) {
+      errorMessage.value = e.toString();
+      product.value = null;
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void selectSize(String size) {

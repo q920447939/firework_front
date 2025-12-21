@@ -3,11 +3,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class ServerConfig {
   String _host = dotenv.env['SERVER_HOST']!;
   String _port = dotenv.env['SERVER_PORT']!;
+  String _scheme = dotenv.env['SERVER_SCHEME'] ?? '';
 
   bool _isDebug = bool.parse(dotenv.env['IS_DEBUG']!);
   String _appName = dotenv.env['APP_NAME']!;
 
   String get tenantId => dotenv.env['TENANT_ID']!;
+  String get tenantCode => dotenv.env['TENANT_CODE'] ?? tenantId;
   String get version => dotenv.env['V']!;
   String get _debugProxy => dotenv.env['DEBUG_PROXY']!;
 
@@ -19,6 +21,8 @@ class ServerConfig {
   String get host => _host;
 
   String get port => _port;
+
+  String get scheme => _scheme;
 
   bool get isDebug => _isDebug;
 

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/models/product_model.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widget/custom_network_image.dart';
+import '../../widgets/no_data.dart';
 import 'home_controller.dart';
 
 enum _SortOption { comprehensive, sales, price, filter }
@@ -56,8 +57,45 @@ class _HomeViewState extends State<HomeView> {
       body: Stack(
         children: [
           Obx(() {
-            if (_controller.products.isEmpty) {
+            if (_controller.isLoading.value) {
               return const Center(child: CircularProgressIndicator());
+            }
+            if (_controller.errorMessage.value.trim().isNotEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        '加载失败',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.textBlack,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _controller.errorMessage.value,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppTheme.textGrey,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      FilledButton(
+                        onPressed: _controller.loadData,
+                        child: const Text('重试'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+            if (_controller.products.isEmpty) {
+              return const NoData();
             }
 
             final products = _sortedProducts(_controller.products.toList());
@@ -286,24 +324,37 @@ class _HomeViewState extends State<HomeView> {
               ),
             ),
             const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _controller.searchSuggestions.map((suggestion) {
-                return ActionChip(
-                  label: Text(suggestion),
-                  onPressed: () {
-                    _searchController.text = suggestion;
-                    _searchController.selection = TextSelection.fromPosition(
-                      TextPosition(offset: suggestion.length),
-                    );
-                    _controller.search(suggestion);
-                    _searchFocusNode.unfocus();
-                  },
-                  backgroundColor: Colors.grey[100],
+            Obx(() {
+              final suggestions = _controller.searchSuggestions;
+              if (suggestions.isEmpty) {
+                return const Text(
+                  '暂无热门搜索',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: AppTheme.textGrey,
+                    fontWeight: FontWeight.w500,
+                  ),
                 );
-              }).toList(),
-            ),
+              }
+              return Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: suggestions.map((suggestion) {
+                  return ActionChip(
+                    label: Text(suggestion),
+                    onPressed: () {
+                      _searchController.text = suggestion;
+                      _searchController.selection = TextSelection.fromPosition(
+                        TextPosition(offset: suggestion.length),
+                      );
+                      _controller.search(suggestion);
+                      _searchFocusNode.unfocus();
+                    },
+                    backgroundColor: Colors.grey[100],
+                  );
+                }).toList(),
+              );
+            }),
           ],
         ),
       ),

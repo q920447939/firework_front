@@ -106,9 +106,46 @@ class _DetailViewState extends State<DetailView> {
         ],
       ),
       body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (controller.errorMessage.value.trim().isNotEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    '加载失败',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    controller.errorMessage.value,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.black54,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  FilledButton(
+                    onPressed: () => controller.loadProduct(widget.productId),
+                    child: const Text('重试'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
         final product = controller.product.value;
         if (product == null) {
-          return const Center(child: CircularProgressIndicator());
+          return const SizedBox.shrink();
         }
 
         final currentPrice = product.activityPrice ?? product.price;
