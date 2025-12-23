@@ -19,7 +19,7 @@ class _CardBasePageState extends State<CardBasePage> {
   static const Color _textSub = Color(0xFF8C8C8C);
   static const Color _divider = Color(0xFFEFEFEF);
 
-  static const double _bottomBarHeight = 112;
+  static const double _bottomBarHeight = 122;
 
   late final List<_CartItemVm> _items = <_CartItemVm>[
     _CartItemVm(
@@ -101,23 +101,19 @@ class _CardBasePageState extends State<CardBasePage> {
       body: Stack(
         children: [
           ListView(
-            padding: EdgeInsets.fromLTRB(
-              12.w,
-              12.h,
-              12.w,
-              _bottomBarHeight.h + 16.h,
-            ),
+            padding: EdgeInsets.fromLTRB(12.w, 12.h, 12.w, 12.h),
             children: [
               _buildStoreCard(),
               Gap(12.h),
               for (var i = 0; i < _items.length; i++) ...[
                 _buildCartItemCard(_items[i], index: i),
-                Gap(12.h),
+                Gap(8.h),
               ],
-              _buildRecommendHeader(),
-              Gap(10.h),
-              _buildRecommendGrid(),
-              Gap(20.h),
+              //_buildRecommendHeader(),
+              //Gap(10.h),
+              //Spacer(),
+              //_buildRecommendGrid(),
+              //Gap(20.h),
             ],
           ),
           Positioned(left: 0, right: 0, bottom: 0, child: _buildBottomBar()),
@@ -150,7 +146,7 @@ class _CardBasePageState extends State<CardBasePage> {
           color: Colors.white,
         ),
       ),
-      actions: [
+      /* actions: [
         IconButton(
           icon: Icon(Icons.more_vert, size: 20.sp, color: Colors.white),
           onPressed: () {
@@ -159,7 +155,7 @@ class _CardBasePageState extends State<CardBasePage> {
             }
           },
         ),
-      ],
+      ], */
       flexibleSpace: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -203,7 +199,7 @@ class _CardBasePageState extends State<CardBasePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '欢乐烟花旗舰店',
+                  '蛙蛙烟花旗舰店',
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
@@ -212,7 +208,7 @@ class _CardBasePageState extends State<CardBasePage> {
                 ),
                 Gap(2.h),
                 Text(
-                  '官方认证商家',
+                  '官方直营 正品保障',
                   style: TextStyle(fontSize: 11.sp, color: _textSub),
                 ),
               ],
@@ -511,7 +507,7 @@ class _CardBasePageState extends State<CardBasePage> {
           Gap(10.h),
           SizedBox(
             width: double.infinity,
-            height: 44.h,
+            height: 45.h,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: _brandRed,
