@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../modules/main/main_wrapper.dart';
 import '../modules/home/home_view.dart';
 import '../modules/detail/detail_view.dart';
-
-import '../modules/cart1/cart_view.dart';
 import '../modules/user/user_view.dart';
 
 class AppRoutes {

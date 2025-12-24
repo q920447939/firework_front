@@ -1,6 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:get/get.dart';
 import 'package:tdesign_flutter/tdesign_flutter.dart';
+
+import '../cart1/cart_controller.dart';
 
 class MainWrapper extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
@@ -46,6 +51,13 @@ class _MainWrapperState extends State<MainWrapper> {
   }
 
   void _onTap(int index) {
+    if (index == 1) {
+      final cart = Get.isRegistered<CartController>()
+          ? Get.find<CartController>()
+          : Get.put(CartController());
+      // Refresh latest prices when user enters the cart tab.
+      unawaited(cart.loadCart().then((_) => cart.refreshLatestPrices()));
+    }
     widget.navigationShell.goBranch(
       index,
       initialLocation: index == widget.navigationShell.currentIndex,

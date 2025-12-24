@@ -120,6 +120,86 @@ class PublicProductApi {
     return Future.wait(futures);
   }
 
+  Future<Map<String, CartProductSnapshot>> fetchProductsBatchForCart(
+    List<String> productIds,
+  ) async {
+    final tenantCode = _config.tenantCode;
+    if (tenantCode.trim().isEmpty) {
+      throw StateError('TENANT_CODE is empty');
+    }
+    if (productIds.isEmpty) return <String, CartProductSnapshot>{};
+
+    final ids = productIds
+        .map((e) => int.tryParse(e.trim()))
+        .whereType<int>()
+        .toList();
+    if (ids.isEmpty) return <String, CartProductSnapshot>{};
+
+    final resp = await _client.post(
+      '/api/public/$tenantCode/products/batch',
+      {'ids': ids},
+    );
+    if (!resp.isOk) {
+      throw StateError('HTTP ${resp.statusCode ?? '-'}: ${resp.statusText ?? 'Request failed'}');
+    }
+
+    final map = _asMap(resp.body);
+    final success = map['success'] == true;
+    if (!success) {
+      throw StateError((map['message'] ?? 'Request failed').toString());
+    }
+
+    final data = map['data'];
+    final list = data is List ? data : const <dynamic>[];
+    final result = <String, CartProductSnapshot>{};
+
+    for (final row in list) {
+      final rowMap = _asMap(row);
+      final productJson = _asMap(rowMap['product']);
+      final skusJson = rowMap['skus'] is List ? (rowMap['skus'] as List) : const <dynamic>[];
+
+      final id = (productJson['id'] ?? '').toString();
+      if (id.trim().isEmpty) continue;
+      final title = (productJson['title'] ?? '').toString();
+      final mainImageUrl = (productJson['mainImageUrl'] ?? '').toString();
+
+      double? minOriginal;
+      double? minActive;
+      final skus = <CartSkuSnapshot>[];
+      for (final sku in skusJson) {
+        final m = _asMap(sku);
+        final specName = (m['specName'] ?? '').toString();
+        final original = _toDouble(m['originalPrice']);
+        final active = _toDouble(m['activePrice']);
+
+        if (original != null) {
+          minOriginal = minOriginal == null ? original : (original < minOriginal ? original : minOriginal);
+        }
+        if (active != null) {
+          minActive = minActive == null ? active : (active < minActive ? active : minActive);
+        }
+
+        skus.add(
+          CartSkuSnapshot(
+            specName: specName,
+            originalPrice: original,
+            activePrice: active,
+          ),
+        );
+      }
+
+      result[id] = CartProductSnapshot(
+        id: id,
+        title: title,
+        mainImageUrl: mainImageUrl,
+        minOriginalPrice: minOriginal,
+        minActivePrice: minActive,
+        skus: skus,
+      );
+    }
+    return result;
+  }
+
   static String _baseUrl(ServerConfig config) {
     final host = config.host.trim();
     final port = config.port.trim();
@@ -127,6 +207,36 @@ class PublicProductApi {
     if (port.isEmpty) return '$scheme://$host';
     return '$scheme://$host:$port';
   }
+}
+
+class CartProductSnapshot {
+  final String id;
+  final String title;
+  final String mainImageUrl;
+  final double? minOriginalPrice;
+  final double? minActivePrice;
+  final List<CartSkuSnapshot> skus;
+
+  CartProductSnapshot({
+    required this.id,
+    required this.title,
+    required this.mainImageUrl,
+    required this.minOriginalPrice,
+    required this.minActivePrice,
+    required this.skus,
+  });
+}
+
+class CartSkuSnapshot {
+  final String specName;
+  final double? originalPrice;
+  final double? activePrice;
+
+  CartSkuSnapshot({
+    required this.specName,
+    required this.originalPrice,
+    required this.activePrice,
+  });
 }
 
 class _PublicProductLite {
